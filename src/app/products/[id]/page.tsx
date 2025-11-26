@@ -28,7 +28,7 @@ async function getProduct(id: string): Promise<Product | null> {
 export default function ProductDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const { user } = useAuth();
   const [product, setProduct] = useState<Product | null>(null);
@@ -36,9 +36,11 @@ export default function ProductDetailPage({
   const [id, setId] = useState<string>('');
 
   useEffect(() => {
-    params.then((resolvedParams) => {
+    const fetchId = async () => {
+      const resolvedParams = await params;
       setId(resolvedParams.id);
-    });
+    };
+    fetchId();
   }, [params]);
 
   useEffect(() => {
