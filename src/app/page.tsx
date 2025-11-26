@@ -5,7 +5,7 @@ import { Product, ApiResponse } from '@/types/product';
 import CategoryFilter from '@/components/CategoryFilter';
 import ProductCard from '@/components/ProductCard';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -20,8 +20,8 @@ export default function HomePage() {
     setLoading(true);
     try {
       const url = selectedCategory 
-        ? `${API_URL}/products?category_id=${selectedCategory}`
-        : `${API_URL}/products`;
+        ? `${API_URL}/api/products?category_id=${selectedCategory}`
+        : `${API_URL}/api/products`;
       
       const res = await fetch(url);
       const data: ApiResponse<Product[]> = await res.json();

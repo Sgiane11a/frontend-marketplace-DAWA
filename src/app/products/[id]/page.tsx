@@ -1,13 +1,17 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Product, ApiResponse } from '@/types/product';
+import { useAuth } from '@/contexts/AuthContext';
+import { useEffect, useState } from 'react';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 async function getProduct(id: string): Promise<Product | null> {
   try {
-    const res = await fetch(`${API_URL}/products/${id}`, {
+    const res = await fetch(`${API_URL}/api/products/${id}`, {
       cache: 'no-store',
     });
 
@@ -21,13 +25,38 @@ async function getProduct(id: string): Promise<Product | null> {
   }
 }
 
-export default async function ProductDetailPage({
+export default function ProductDetailPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const { id } = await params;
-  const product = await getProduct(id);
+  const { user } = useAuth();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [id, setId] = useState<string>('');
+
+  useEffect(() => {
+    params.then((resolvedParams) => {
+      setId(resolvedParams.id);
+    });
+  }, [params]);
+
+  useEffect(() => {
+    if (id) {
+      getProduct(id).then((data) => {
+        setProduct(data);
+        setLoading(false);
+      });
+    }
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <p className="text-center">Cargando...</p>
+      </div>
+    );
+  }
 
   if (!product) {
     notFound();
@@ -101,9 +130,19 @@ export default async function ProductDetailPage({
             )}
 
             <div className="mt-auto pt-6 border-t border-gray-200">
-              <button className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-                Agregar al carrito
-              </button>
+              {user && (
+                <button className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                  Agregar al carrito
+                </button>
+              )}
+              {!user && (
+                <Link 
+                  href="/login"
+                  className="block w-full bg-gray-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-700 transition-colors text-center"
+                >
+                  Inicia sesión para comprar
+                </Link>
+              )}
             </div>
 
             <div className="mt-4 text-sm text-gray-500">

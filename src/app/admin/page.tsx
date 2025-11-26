@@ -5,7 +5,7 @@ import { Product, Category, ApiResponse } from '@/types/product';
 import RouteGuard from '@/components/RouteGuard';
 import { useAuth } from '@/contexts/AuthContext';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 function AdminContent() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -28,7 +28,7 @@ function AdminContent() {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch(`${API_URL}/categories`);
+      const res = await fetch(`${API_URL}/api/categories`);
       const data: ApiResponse<Category[]> = await res.json();
       if (data.success) setCategories(data.data);
     } catch (error) {
@@ -38,7 +38,7 @@ function AdminContent() {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch(`${API_URL}/products`);
+      const res = await fetch(`${API_URL}/api/products`);
       const data: ApiResponse<Product[]> = await res.json();
       if (data.success) setProducts(data.data);
     } catch (error) {
@@ -51,8 +51,8 @@ function AdminContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const url = editingId
-      ? `${API_URL}/products/${editingId}`
-      : `${API_URL}/products`;
+      ? `${API_URL}/api/products/${editingId}`
+      : `${API_URL}/api/products`;
     const method = editingId ? 'PUT' : 'POST';
 
     try {
@@ -100,7 +100,7 @@ function AdminContent() {
     if (!confirm('¿Estás seguro?')) return;
 
     try {
-      const res = await fetch(`${API_URL}/products/${id}`, {
+      const res = await fetch(`${API_URL}/api/products/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -278,7 +278,7 @@ function AdminContent() {
                       {product.category?.name || '-'}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
-                      ${product.precio.toFixed(2)}
+                      ${Number(product.precio).toFixed(2)}
                     </td>
                     <td className="px-6 py-4 text-sm text-right">
                       <button

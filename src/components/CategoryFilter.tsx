@@ -8,7 +8,7 @@ interface CategoryFilterProps {
   onCategoryChange: (categoryId: number | null) => void;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export default function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryFilterProps) {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -20,7 +20,7 @@ export default function CategoryFilter({ selectedCategory, onCategoryChange }: C
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch(`${API_URL}/categories`);
+      const res = await fetch(`${API_URL}/api/categories`);
       const data = await res.json();
       if (data.success) {
         setCategories(data.data);
